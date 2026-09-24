@@ -40,6 +40,23 @@ npm run lint      # eslint
 npm run format    # prettier
 ```
 
+## Publiceren
+
+De site draait als statische, vooraf gerenderde build op
+[doktertijd.dokterbart.nl](https://doktertijd.dokterbart.nl) (Apache op de
+Bitnami-server `amazon-eu5`, map `/opt/bitnami/apps/doktertijd`, vhost in
+`/opt/bitnami/apache/conf/vhosts/doktertijd-vhost.conf`). Het certificaat komt
+van Let's Encrypt via certbot en verlengt automatisch.
+
+Opnieuw publiceren na een wijziging:
+
+```sh
+./deploy.sh
+```
+
+Dat bouwt met `npm run build:static` (alle routes naar HTML in `dist/client/`)
+en zet het resultaat via ssh op de server.
+
 ## Techniek
 
 - [TanStack Start](https://tanstack.com/start) met file-based routing in `src/routes/`
