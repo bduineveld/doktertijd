@@ -27,4 +27,5 @@ ssh "$HOST" "set -e
   rm -rf $REMOTE_DIR.old"
 
 echo "==> Controle"
-curl -s -o /dev/null -w "https://doktertijd.dokterbart.nl/ -> %{http_code}\n" https://doktertijd.dokterbart.nl/
+status=$(curl -s -o /dev/null -w "%{http_code}" https://doktertijd.dokterbart.nl/)
+echo "https://doktertijd.dokterbart.nl/ -> $status"
