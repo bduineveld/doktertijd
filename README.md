@@ -1,29 +1,51 @@
-# Welcome to your Lovable project
+# DokterTijd
 
-This project was built with [Lovable](https://lovable.dev).
+**Dokterstijd alleen waar een dokter nodig is.**
 
-## Build with Lovable
+Fictieve hackathondemo van een huisartsenpraktijk met 5.000 patiënten waarin AI
+alles afhandelt wat geen dokter nodig heeft. Er zijn geen echte patiëntgegevens
+in deze app.
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+## Pagina's
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+| Route | Wat je ziet |
+| --- | --- |
+| `/` | **Spreekkamer** – muurprojectie voor de spreekkamer, bediend met je stem. Geen toetsenbord, geen dossier. |
+| `/werkdag` | **Mijn werkdag** – alleen de taken waarvoor een dokter nodig is, met SBAR-samenvatting per patiënt. |
+| `/simuleer` | **Simuleer een dag** – een volledige huisartsendag in 2030 in twee minuten. |
+| `/onder-water` | **Onder water** – alle zorg die nooit bij de dokter terechtkomt. |
 
-## Development
+De schakelaar **Volledig autonoom** in de kop verbergt taken die de AI zelf kan
+afronden (fotobeoordelingen, korte overlegjes). De keuze wordt in de browser
+onthouden.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+De spreekkamer gebruikt de spraak-API's van de browser (`speechSynthesis` en
+`SpeechRecognition`). Gebruik Chrome of Edge voor de volledige ervaring.
+
+## Lokaal draaien
+
+Vereist Node.js 22 of hoger.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
 
-## Built with
+Overige scripts:
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+```sh
+npm run build     # productiebuild in .output/
+npm run preview   # bekijk de productiebuild
+npm run lint      # eslint
+npm run format    # prettier
+```
+
+## Techniek
+
+- [TanStack Start](https://tanstack.com/start) met file-based routing in `src/routes/`
+- React 19, TypeScript
+- Tailwind CSS 4 met shadcn/ui-componenten in `src/components/ui/`
+- Demodata en logica in `src/lib/`
+
+Het project is oorspronkelijk gegenereerd met Lovable en wordt nu zelfstandig
+onderhouden.
