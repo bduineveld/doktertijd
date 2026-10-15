@@ -13,7 +13,11 @@ echo "==> Bouwen (statisch, prerendered)"
 npm run build:static
 
 echo "==> Inpakken"
-tar --force-local -czf "$TARBALL" -C dist/client .
+# --force-local is alleen nodig (en bekend) bij GNU tar op Windows; macOS-tar kent het niet.
+TAR_OPTS=""
+if tar --version 2>/dev/null | grep -q "GNU tar"; then TAR_OPTS="--force-local"; fi
+# COPYFILE_DISABLE voorkomt dat macOS ._-bestanden meepakt.
+COPYFILE_DISABLE=1 tar $TAR_OPTS -czf "$TARBALL" -C dist/client .
 
 echo "==> Uploaden naar $HOST:$REMOTE_DIR"
 scp -q "$TARBALL" "$HOST:/tmp/doktertijd-dist.tar.gz"
