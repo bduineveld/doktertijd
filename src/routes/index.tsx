@@ -42,7 +42,6 @@ function Projectie() {
   const [maxDelegatie] = useMaxDelegatie();
   const [tempo, setTempo] = useTempo();
   const [fase, setFase] = useState<Fase>("briefing");
-  const [alinea, setAlinea] = useState(-1);
   const [idx, setIdx] = useState(0);
   const [inKamer, setInKamer] = useState(false);
   const [antwoorden, setAntwoorden] = useState<{ id: number; vraag: string; antwoord: string }[]>([]);
@@ -78,18 +77,16 @@ function Projectie() {
     [stemAan],
   );
 
-  /** Briefing: alinea voor alinea, met markering op de muur. */
+  /** Briefing: alinea voor alinea voorlezen; de tekst staat niet op de muur. */
   const speelBriefing = useCallback(() => {
     gestopt.current = false;
     const rij = BRIEFING_ALINEAS;
     const volgende = (i: number) => {
       if (gestopt.current) return;
       if (i >= rij.length) {
-        setAlinea(-1);
         naarDag();
         return;
       }
-      setAlinea(i);
       spreekUit(rij[i]!, () => setTimeout(() => volgende(i + 1), 320));
     };
     volgende(0);
@@ -99,7 +96,6 @@ function Projectie() {
   const naarDag = useCallback(() => {
     gestopt.current = true;
     stopSpraak();
-    setAlinea(-1);
     setFase("dag");
     setTimeout(() => {
       if (!stemAan) return;
@@ -192,7 +188,6 @@ function Projectie() {
         voer("Opnieuw", () => {
           stopSpraak();
           setIdx(0);
-          setAlinea(-1);
           setInKamer(false);
           setFase("briefing");
         });
@@ -283,18 +278,6 @@ function Projectie() {
               <p className="mt-2 text-[1.05rem] text-muted-foreground">
                 Geen inbox. Drie dingen die een mens je zou vertellen.
               </p>
-              <div className="mt-8 space-y-3">
-                {BRIEFING_ALINEAS.map((a, i) => (
-                  <p
-                    key={a}
-                    className={`font-serif text-[1.35rem] leading-relaxed transition-colors duration-300 ${
-                      alinea === i ? "text-foreground" : alinea > i ? "text-foreground/60" : "text-muted-foreground/60"
-                    }`}
-                  >
-                    {a}
-                  </p>
-                ))}
-              </div>
               <div className="mt-9 grid grid-cols-3 gap-4">
                 {NACHTKAARTEN.map((k) => (
                   <div key={k.naam} className="rounded-xl border border-border bg-secondary/40 px-5 py-5">
@@ -519,7 +502,6 @@ function Projectie() {
                 onClick={() => {
                   setIdx(0);
                   setFase("briefing");
-                  setAlinea(-1);
                   setInKamer(false);
                 }}
                 className="mt-7 rounded-full border border-sage/40 px-7 py-3 text-[0.95rem] font-medium hover:bg-sage-soft"
