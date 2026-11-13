@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Bouwt de statische site en zet hem op doktertijd.dokterbart.nl (Bitnami/Apache op amazon-eu5).
-# Gebruik: ./deploy.sh   (vereist de ssh-host "amazon-eu5" in ~/.ssh/config)
+# Bouwt de statische site en zet hem op doktertijd.dokterbart.nl (nginx-container op Cyso, via Coolify).
+# Gebruik: ./deploy.sh   (vereist de ssh-host "cyso-prod" in ~/.ssh/config)
+# De nginx-container mount /data/apps/static als geheel, dus de map wisselen is veilig.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-HOST=amazon-eu5
-REMOTE_DIR=/opt/bitnami/apps/doktertijd
+HOST=cyso-prod
+REMOTE_DIR=/data/apps/static/doktertijd
 TARBALL=$(mktemp -t doktertijd-XXXXXX.tar.gz)
 trap 'rm -f "$TARBALL"' EXIT
 
@@ -24,6 +25,8 @@ scp -q "$TARBALL" "$HOST:/tmp/doktertijd-dist.tar.gz"
 ssh "$HOST" "set -e
   mkdir -p $REMOTE_DIR.new
   tar -xzf /tmp/doktertijd-dist.tar.gz -C $REMOTE_DIR.new
+  # Rechten vastzetten: vanaf een exFAT-schijf komen mappen als 700 mee en krijgt nginx 403.
+  chmod -R u=rwX,go=rX $REMOTE_DIR.new
   rm -f /tmp/doktertijd-dist.tar.gz
   rm -rf $REMOTE_DIR.old
   [ -d $REMOTE_DIR ] && mv $REMOTE_DIR $REMOTE_DIR.old
