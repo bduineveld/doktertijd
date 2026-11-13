@@ -93,28 +93,7 @@ export function MorningBriefing({
     return true;
   }, []);
 
-  // Automatisch proberen; als de browser dat niet toestaat, wordt
-  // "Briefing beluisteren" de primaire knop.
-  useEffect(() => {
-    const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
-    if (!synth) {
-      setStatus("geblokkeerd");
-      return;
-    }
-    const t = setTimeout(() => spreek(0), 400);
-    const check = setTimeout(() => {
-      if (!synth.speaking && !synth.pending) {
-        gestopt.current = true;
-        synth.cancel();
-        setStatus((s) => (s === "klaar" ? s : "geblokkeerd"));
-        setIndex(-1);
-      }
-    }, 1800);
-    return () => {
-      clearTimeout(t);
-      clearTimeout(check);
-    };
-  }, [spreek]);
+  // Niet automatisch voorlezen: alleen na een klik op "Briefing beluisteren".
 
   // Stop spraak bij sluiten of navigatie naar een ander scherm.
   useEffect(() => {

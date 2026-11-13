@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OnderWaterRouteImport } from './routes/onder-water'
 import { Route as SimuleerRouteImport } from './routes/simuleer'
+import { Route as SpreekkamerRouteImport } from './routes/spreekkamer'
 import { Route as WerkdagRouteImport } from './routes/werkdag'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const SimuleerRoute = SimuleerRouteImport.update({
   path: '/simuleer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpreekkamerRoute = SpreekkamerRouteImport.update({
+  id: '/spreekkamer',
+  path: '/spreekkamer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WerkdagRoute = WerkdagRouteImport.update({
   id: '/werkdag',
   path: '/werkdag',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/onder-water': typeof OnderWaterRoute
   '/simuleer': typeof SimuleerRoute
+  '/spreekkamer': typeof SpreekkamerRoute
   '/werkdag': typeof WerkdagRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/onder-water': typeof OnderWaterRoute
   '/simuleer': typeof SimuleerRoute
+  '/spreekkamer': typeof SpreekkamerRoute
   '/werkdag': typeof WerkdagRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/onder-water': typeof OnderWaterRoute
   '/simuleer': typeof SimuleerRoute
+  '/spreekkamer': typeof SpreekkamerRoute
   '/werkdag': typeof WerkdagRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/onder-water' | '/simuleer' | '/werkdag'
+  fullPaths: '/' | '/onder-water' | '/simuleer' | '/spreekkamer' | '/werkdag'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/onder-water' | '/simuleer' | '/werkdag'
-  id: '__root__' | '/' | '/onder-water' | '/simuleer' | '/werkdag'
+  to: '/' | '/onder-water' | '/simuleer' | '/spreekkamer' | '/werkdag'
+  id:
+    | '__root__'
+    | '/'
+    | '/onder-water'
+    | '/simuleer'
+    | '/spreekkamer'
+    | '/werkdag'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OnderWaterRoute: typeof OnderWaterRoute
   SimuleerRoute: typeof SimuleerRoute
+  SpreekkamerRoute: typeof SpreekkamerRoute
   WerkdagRoute: typeof WerkdagRoute
 }
 
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimuleerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/spreekkamer': {
+      id: '/spreekkamer'
+      path: '/spreekkamer'
+      fullPath: '/spreekkamer'
+      preLoaderRoute: typeof SpreekkamerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/werkdag': {
       id: '/werkdag'
       path: '/werkdag'
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OnderWaterRoute: OnderWaterRoute,
   SimuleerRoute: SimuleerRoute,
+  SpreekkamerRoute: SpreekkamerRoute,
   WerkdagRoute: WerkdagRoute,
 }
 export const routeTree = rootRouteImport
