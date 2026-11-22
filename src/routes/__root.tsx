@@ -125,6 +125,15 @@ function RootComponent() {
     select: (s) => s.location.pathname === "/" || s.location.pathname.startsWith("/opname"),
   });
 
+  // ?opname achter elke pagina opent die pagina in het opnamekader (16:9) voor de demovideo.
+  useEffect(() => {
+    const zoek = new URLSearchParams(window.location.search);
+    if (!zoek.has("opname") || window.self !== window.top) return;
+    const pad = window.location.pathname.replace(/\/$/, "") || "/";
+    if (pad.startsWith("/opname")) return;
+    window.location.replace(`/opname?${new URLSearchParams({ pad }).toString()}`);
+  }, []);
+
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3000);

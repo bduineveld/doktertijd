@@ -35,7 +35,11 @@ const BALK_H = 96;
 
 function Opname() {
   const [maat, setMaat] = useState<Maat>("720");
+  // pad = waar het kader mee start; huidig = waar je binnen het kader naartoe hebt geklikt.
   const [pad, setPad] = useState("/");
+  const [huidig, setHuidig] = useState("/");
+  // Pas na het inlezen van het adres mag de adresbalk worden bijgewerkt.
+  const [ingelezen, setIngelezen] = useState(false);
   const [herstart, setHerstart] = useState(0);
   const [venster, setVenster] = useState({ w: 0, h: 0, dpr: 1 });
   const frame = useRef<HTMLIFrameElement>(null);
@@ -46,14 +50,32 @@ function Opname() {
     const m = p.get("maat");
     if (m === "720" || m === "1080") setMaat(m);
     const begin = p.get("pad");
-    if (begin?.startsWith("/") && !begin.startsWith("/opname")) setPad(begin);
+    if (begin?.startsWith("/") && !begin.startsWith("/opname")) {
+      setPad(begin);
+      setHuidig(begin);
+    }
+    setIngelezen(true);
   }, []);
 
-  // Houd de adresbalk gelijk met de keuze, zodat herladen dezelfde opstelling geeft.
+  // Volg het doorklikken binnen het kader (zelfde domein, dus het pad is leesbaar).
   useEffect(() => {
-    const p = new URLSearchParams({ maat, pad });
+    const t = setInterval(() => {
+      try {
+        const p = frame.current?.contentWindow?.location.pathname;
+        if (p) setHuidig(p.length > 1 ? p.replace(/\/$/, "") : p);
+      } catch {
+        /* kader nog aan het laden */
+      }
+    }, 400);
+    return () => clearInterval(t);
+  }, []);
+
+  // Houd de adresbalk gelijk, zodat herladen terugkomt op dezelfde pagina en maat.
+  useEffect(() => {
+    if (!ingelezen) return;
+    const p = new URLSearchParams({ maat, pad: huidig });
     window.history.replaceState(null, "", `/opname?${p.toString()}`);
-  }, [maat, pad]);
+  }, [ingelezen, maat, huidig]);
 
   useEffect(() => {
     const meet = () =>
@@ -70,6 +92,7 @@ function Opname() {
 
   const ga = (nieuw: string) => {
     setPad(nieuw);
+    setHuidig(nieuw);
     setHerstart((n) => n + 1);
   };
 
@@ -111,7 +134,7 @@ function Opname() {
               type="button"
               onClick={() => ga(p.pad)}
               className={`rounded-full px-3 py-1 transition-colors ${
-                pad === p.pad ? "bg-paper/15 text-paper" : "hover:bg-paper/10 hover:text-paper"
+                huidig === p.pad ? "bg-paper/15 text-paper" : "hover:bg-paper/10 hover:text-paper"
               }`}
             >
               {p.label}

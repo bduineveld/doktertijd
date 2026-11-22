@@ -3,7 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BRIEFING_ALINEAS } from "@/components/morning-briefing";
 import { KAMER, type KamerPatient } from "@/lib/spreekkamer-data";
 import { FEITEN, STEMHINTS, WIJSZINNEN } from "@/lib/projectie-data";
-import { KIND_LABEL, TASKS } from "@/lib/demo-data";
+import { KIND_LABEL, TASKS, type Task } from "@/lib/demo-data";
+import { TaskDetail } from "@/components/task-detail";
 import { MAX_DELEGATIE_IDS, useMaxDelegatie } from "@/lib/max-delegatie";
 import { bevat, matchVraag, useLuisteren } from "@/lib/luisteren";
 import { TEMPO_MAX, TEMPO_MIN, spreekUit, stopSpraak, useTempo } from "@/lib/spraak";
@@ -50,6 +51,8 @@ function Projectie() {
   // Standaard stil: de muur praat pas als je de stem aanzet of de briefing vraagt.
   const [stemAan, setStemAan] = useState(false);
   const [commando, setCommando] = useState<string | null>(null);
+  // Aangeklikte afspraak uit de dagplanning: opent hetzelfde detailpaneel als 'Mijn werkdag'.
+  const [detail, setDetail] = useState<Task | null>(null);
   const teller = useRef(0);
   const gestopt = useRef(false);
   const commandoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -333,7 +336,12 @@ function Projectie() {
               <h2 className="mt-10 text-[1.5rem]">Hier zie je de volgende afspraken.</h2>
               <ul className="mt-5 divide-y divide-border border-y border-border">
                 {afspraken.map((t, i) => (
-                  <li key={t.id} className="flex items-baseline gap-5 py-3.5">
+                  <li key={t.id}>
+                    <button
+                      type="button"
+                      onClick={() => setDetail(t)}
+                      className="-mx-3 flex w-[calc(100%+1.5rem)] items-baseline gap-5 rounded-lg px-3 py-3.5 text-left transition-colors hover:bg-secondary/60"
+                    >
                     <span className="w-16 shrink-0 font-serif text-[1.1rem] text-muted-foreground">
                       {TIJDEN[i] ?? "—"}
                     </span>
@@ -349,6 +357,7 @@ function Projectie() {
                         MENS NODIG
                       </span>
                     )}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -600,6 +609,8 @@ function Projectie() {
           </p>
         )}
       </div>
+
+      {detail && <TaskDetail task={detail} onClose={() => setDetail(null)} onDecision={() => {}} />}
     </div>
   );
 }
