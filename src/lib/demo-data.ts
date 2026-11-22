@@ -27,11 +27,29 @@ export interface Task {
   mensNodig?: boolean;
   urgent?: boolean;
   waaromJij: string;
-  sbar?: { s: string; b: string; a: string; r: string };
+  sbar?: {
+    s: string;
+    b: string;
+    a: string;
+    r: string;
+    /** Optionele steekwoorden; de volledige tekst is dan uitklapbaar. */
+    kort?: Partial<Record<"s" | "b" | "a" | "r", string>>;
+  };
   choices?: Choice[];
   contact?: { doel: string; punten: string[]; startLabel: string };
   briefing?: { kop: string; tekst: string }[];
   voorbereid?: string[];
+  medicatie?: Medicatie;
+}
+
+/** Medicatiecontext bij een casus: waar staat de dosis en wat zegt de richtlijn. */
+export interface Medicatie {
+  middel: string;
+  gebruik: string;
+  /** Dosis in mg; stap is de gebruikelijke ophoogstap. */
+  dosis: { huidig: number; start: number; max: number; stap: number };
+  dosisToelichting: string;
+  richtlijn: { bron: string; punten: string[] };
 }
 
 export const KIND_LABEL: Record<TaskKind, string> = {
@@ -286,31 +304,56 @@ export const TASKS: Task[] = [
     naam: "B. Kuipers",
     leeftijd: 47,
     titel: "Wil de dokter horen over sertraline",
-    sub: "Zes weken in behandeling, twijfelt of hij doorgaat",
-    kind: "telefoon",
+    sub: "Eerste depressieve episode, zes weken sertraline, twijfelt of hij doorgaat",
+    kind: "video",
     duur: "8 min",
     bucket: "ochtend",
     mensNodig: true,
     waaromJij:
-      "Hij vroeg expliciet om jouw stem. Doorzetten of stoppen met een antidepressivum is een gesprek over vertrouwen, niet over een protocol.",
+      "Patiënt vraagt expliciet om contact met de huisarts. Evaluatie na 6 weken sertraline bij gedeeltelijke respons: besluit over voortzetten, ophogen of wisselen van medicatie.",
     sbar: {
-      s: "Man 47 jaar, sertraline 50 mg sinds 6 weken bij depressieve episode.",
-      b: "Aanvankelijk misselijkheid, nu verdwenen. Slaap iets beter, stemming wisselend.",
-      a: "Gedeeltelijke respons op week 6; vroegtijdig stoppen is het grootste risico.",
-      r: "Gesprek over verwachtingen; volhouden, ophogen of afbouwen.",
+      s: "Man 47 jaar, eerste depressieve episode, 6 weken sertraline 50 mg. Twijfelt of hij doorgaat en wil daarover de huisarts spreken.",
+      b: "Luxerend: in het voorjaar ontslagen bij een reorganisatie na 22 jaar bij dezelfde werkgever; twee maanden later overleed zijn vader. Geen eerdere depressies of psychiatrische voorgeschiedenis. Aanvankelijk misselijkheid, nu verdwenen. Slaap iets beter, stemming wisselend.",
+      a: "Gedeeltelijke respons op de startdosis. Stemming wisselend, plezier deels terug (wandelt weer dagelijks), slaap beter. Daginvulling nog beperkt: solliciteert niet, ziet weinig mensen. PHQ-9 18 → 12 (−33%), afgenomen door DokterTijd. Werkloosheid en rouw houden de klachten mogelijk in stand. Suïcidaliteit sinds de start niet beoordeeld. Zorg: stoppen voordat het effect goed te beoordelen is.",
+      r: "Suïcidaliteit uitvragen. Gesprek over verwachtingen; volhouden, ophogen of afbouwen.",
+      kort: {
+        b: "Ontslag na 22 jaar · vader overleden · geen psychiatrische voorgeschiedenis · misselijkheid weg, slaap iets beter",
+        a: "Gedeeltelijke respons · functioneren nog beperkt · PHQ-9 18 → 12 · suïcidaliteit niet beoordeeld",
+      },
+    },
+    medicatie: {
+      middel: "Sertraline",
+      gebruik: "1 dd 50 mg · sinds 6 weken · 's ochtends",
+      dosis: { huidig: 50, start: 50, max: 200, stap: 50 },
+      dosisToelichting:
+        "50 mg is de startdosering én de minimaal effectieve dosering. Er is dus nog ruimte tot maximaal 200 mg per dag.",
+      richtlijn: {
+        bron: "NHG-Standaard Depressie · herziening mei 2026",
+        punten: [
+          "Ophogen kan al na 1-2 weken, in overleg en mits goed verdragen. Bij hem is dat nog niet gebeurd.",
+          "Evalueer het effect na 4-6 weken en controleer elke 1-2 weken. Voor hem is het evaluatiemoment nu.",
+          "Gedeeltelijke respons: ga na wat de klachten in stand houdt, hoe het met therapietrouw en motivatie staat, en overweeg de behandeling te verlengen tot maximaal 10 weken.",
+          "Ophogen tot de maximale dosering kan alsnog als dat nog niet geprobeerd is. Na 4-6 weken op een standaarddosering levert ophogen vaak vooral meer bijwerkingen op.",
+          "Onvoldoende verbetering na 4-6 weken: wissel naar een ander antidepressivum.",
+          "Goede respons: doorgaan tot minstens 6 maanden na remissie (eerste episode).",
+          "Nooit abrupt stoppen: afbouwen via 25 mg en na 2-4 weken staken.",
+        ],
+      },
     },
     contact: {
       doel: "Twijfel serieus nemen en samen een realistisch verwachtingspatroon maken.",
       punten: [
         "Vraag wat er sinds de start wél is veranderd",
+        "Vraag hoe het gaat met het verlies van zijn werk en van zijn vader",
         "Benoem het normale beloop: effect vaak pas week 6-8",
         "Bespreek bijwerkingen open, ook seksuele",
+        "Vraag naar doodsgedachten",
         "Maak samen een afspraak over het beslismoment",
       ],
-      startLabel: "Patiënt bellen",
+      startLabel: "Videoconsult starten",
     },
     choices: [
-      { label: "Volhouden huidige dosis", gevolg: "Belafspraak over 2 weken, stemmingsmonitoring geactiveerd." },
+      { label: "Volhouden huidige dosis", gevolg: "Videoconsult over 2 weken, stemmingsmonitoring geactiveerd." },
       { label: "Ophogen naar 100 mg", gevolg: "Recept, bijwerkingenuitleg en controle dag 7 geregeld." },
       { label: "Afbouwen in overleg", gevolg: "Afbouwschema klaargezet en POH-GGZ ingeschakeld." },
     ],

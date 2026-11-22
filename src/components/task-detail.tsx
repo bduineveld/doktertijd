@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { KIND_LABEL, type Task } from "@/lib/demo-data";
+import { KIND_LABEL, type Medicatie, type Task } from "@/lib/demo-data";
 
 type Fase = "overzicht" | "verbinden" | "gesprek" | "klaar";
 
@@ -100,19 +100,18 @@ export function TaskDetail({
           <div className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border">
             {(
               [
-                ["Situatie", task.sbar.s],
-                ["Background", task.sbar.b],
-                ["Assessment", task.sbar.a],
-                ["Recommendation", task.sbar.r],
+                ["Situatie", "s"],
+                ["Background", "b"],
+                ["Assessment", "a"],
+                ["Recommendation", "r"],
               ] as const
-            ).map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[150px_1fr] gap-4 bg-paper px-5 py-3">
-                <div className="kicker pt-[3px]">{k}</div>
-                <div className="text-[0.92rem] leading-relaxed text-foreground/90">{v}</div>
-              </div>
+            ).map(([k, sleutel]) => (
+              <SbarRegel key={k} kop={k} tekst={task.sbar![sleutel]} kort={task.sbar!.kort?.[sleutel]} />
             ))}
           </div>
         )}
+
+        {task.medicatie && <MedicatieBlok medicatie={task.medicatie} />}
 
         {/* Briefing (slechtnieuws) */}
         {task.briefing && (
@@ -273,6 +272,106 @@ export function TaskDetail({
             className="mt-6 rounded-md border border-border bg-paper px-4 py-2 text-sm text-foreground hover:bg-secondary"
           >
             Klaar
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Medicatie in één oogopslag: dosis ten opzichte van start en maximum, plus het richtlijnadvies. */
+function MedicatieBlok({ medicatie }: { medicatie: Medicatie }) {
+  const [bijwerkingen, setBijwerkingen] = useState(false);
+  const [richtlijnOpen, setRichtlijnOpen] = useState(false);
+  const { huidig, start, max, stap } = medicatie.dosis;
+  const stappen = Array.from({ length: Math.round(max / stap) }, (_, i) => (i + 1) * stap);
+
+  return (
+    <div className="mt-6 rounded-md border border-border bg-paper p-5">
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <div className="kicker">Medicatie</div>
+          <div className="mt-1 font-serif text-[1.15rem]">{medicatie.middel}</div>
+          <div className="text-[0.88rem] text-muted-foreground">{medicatie.gebruik}</div>
+        </div>
+        <button
+          onClick={() => setBijwerkingen(true)}
+          className="shrink-0 rounded-md border border-sage/40 px-3.5 py-1.5 text-sm text-accent-foreground hover:bg-sage-soft"
+        >
+          Bijwerkingenzoeker ↗
+        </button>
+      </div>
+      {bijwerkingen && (
+        <p className="animate-enter mt-2 text-right text-[0.8rem] text-muted-foreground">
+          In de praktijk opent hier de bijwerkingenzoeker; in deze demo is die niet gekoppeld.
+        </p>
+      )}
+
+      {/* Dosis ten opzichte van start en maximum */}
+      <div className="mt-5">
+        <div className="flex gap-1.5">
+          {stappen.map((mg) => (
+            <div key={mg} className="flex-1">
+              <div className={`h-2 rounded-full ${mg <= huidig ? "bg-sage" : "bg-secondary"}`} />
+              <div
+                className={`mt-1.5 text-[0.78rem] tabular-nums ${
+                  mg === huidig ? "font-semibold text-accent-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {mg} mg
+                {mg === start && " · start"}
+                {mg === max && " · max"}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-[0.9rem] leading-relaxed text-foreground/90">{medicatie.dosisToelichting}</p>
+      </div>
+
+      {/* Richtlijn, standaard ingeklapt */}
+      <div className="mt-5 border-t border-border pt-4">
+        <button
+          onClick={() => setRichtlijnOpen((o) => !o)}
+          aria-expanded={richtlijnOpen}
+          className="flex w-full items-center justify-between gap-4 text-left"
+        >
+          <span className="kicker">{medicatie.richtlijn.bron}</span>
+          <span className="flex items-center gap-1.5 text-[0.82rem] text-accent-foreground">
+            {richtlijnOpen ? "Verberg advies" : "Toon advies"}
+            <span className={`transition-transform ${richtlijnOpen ? "rotate-180" : ""}`}>▾</span>
+          </span>
+        </button>
+        {richtlijnOpen && (
+          <ul className="animate-enter mt-3 space-y-2">
+            {medicatie.richtlijn.punten.map((p) => (
+              <li key={p} className="flex gap-3 text-[0.9rem] leading-relaxed text-foreground/90">
+                <span className="text-sage">—</span>
+                {p}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Eén SBAR-regel; met steekwoorden is de volledige tekst uitklapbaar. */
+function SbarRegel({ kop, tekst, kort }: { kop: string; tekst: string; kort?: string | undefined }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="grid grid-cols-[150px_1fr] gap-4 bg-paper px-5 py-3">
+      <div className="kicker pt-[3px]">{kop}</div>
+      <div className="text-[0.92rem] leading-relaxed text-foreground/90">
+        {kort && !open ? kort : tekst}
+        {kort && (
+          <button
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            className="ml-2 whitespace-nowrap text-[0.82rem] text-accent-foreground underline-offset-4 hover:underline"
+          >
+            {open ? "minder ▴" : "meer ▾"}
           </button>
         )}
       </div>
