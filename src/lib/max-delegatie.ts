@@ -16,10 +16,10 @@ export const MAX_DELEGATIE_IDS = [
 
 export const MAX_DELEGATIE_TOAST = "Volledig autonoom. Jij ziet alleen menselijke zorg.";
 
-/** Standaard AAN: alleen een expliciete "0" zet de schakelaar uit. */
+/** Standaard UIT: alleen een expliciete "1" zet de schakelaar aan. */
 export function getMaxDelegatie(): boolean {
-  if (typeof window === "undefined") return true;
-  return window.localStorage.getItem(KEY) !== "0";
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(KEY) === "1";
 }
 
 export function setMaxDelegatie(v: boolean) {
@@ -30,7 +30,7 @@ export function setMaxDelegatie(v: boolean) {
 
 /** Gedeelde schakelaar over alle schermen heen. */
 export function useMaxDelegatie(): [boolean, (v: boolean) => void] {
-  const [aan, setAan] = useState(true);
+  const [aan, setAan] = useState(false);
 
   useEffect(() => {
     setAan(getMaxDelegatie());
