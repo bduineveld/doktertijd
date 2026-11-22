@@ -41,6 +41,10 @@ function Opname() {
   // Pas na het inlezen van het adres mag de adresbalk worden bijgewerkt.
   const [ingelezen, setIngelezen] = useState(false);
   const [herstart, setHerstart] = useState(0);
+  // Laadmoment als kenmerk in het kaderadres: zo haalt de browser altijd de nieuwste versie
+  // van de pagina op, ook als hij een oude kopie bewaard heeft (een harde refresh ververst
+  // alleen de buitenste pagina, niet wat er in het kader staat).
+  const [vers, setVers] = useState("");
   const [venster, setVenster] = useState({ w: 0, h: 0, dpr: 1 });
   const frame = useRef<HTMLIFrameElement>(null);
 
@@ -54,6 +58,7 @@ function Opname() {
       setPad(begin);
       setHuidig(begin);
     }
+    setVers(Date.now().toString(36));
     setIngelezen(true);
   }, []);
 
@@ -101,20 +106,22 @@ function Opname() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-ink">
       <div className="relative" style={{ width: w, height: h }}>
-        <iframe
-          ref={frame}
-          key={`${pad}-${herstart}`}
-          // Met slash: de server stuurt '/pagina' anders via een http-redirect door,
-          // en die blokkeert de browser binnen een https-pagina (kader blijft leeg).
-          src={pad === "/" ? pad : `${pad}/`}
-          title="DokterTijd in opnamekader"
-          width={w}
-          height={h}
-          allow="microphone; autoplay; fullscreen"
-          className="block border-0 bg-paper"
-          // Direct toetsen (Enter op de openingspagina) naar de site sturen.
-          onLoad={(e) => e.currentTarget.contentWindow?.focus()}
-        />
+        {ingelezen && (
+          <iframe
+            ref={frame}
+            key={`${pad}-${herstart}`}
+            // Met slash: de server stuurt '/pagina' anders via een http-redirect door,
+            // en die blokkeert de browser binnen een https-pagina (kader blijft leeg).
+            src={`${pad === "/" ? pad : `${pad}/`}?v=${vers}-${herstart}`}
+            title="DokterTijd in opnamekader"
+            width={w}
+            height={h}
+            allow="microphone; autoplay; fullscreen"
+            className="block border-0 bg-paper"
+            // Direct toetsen (Enter op de openingspagina) naar de site sturen.
+            onLoad={(e) => e.currentTarget.contentWindow?.focus()}
+          />
+        )}
         {/* Hoekmarkeringen net buiten het kader, om de opnameselectie op te richten. */}
         {(
           ["-left-3 -top-3", "-right-3 -top-3", "-left-3 -bottom-3", "-right-3 -bottom-3"] as const
