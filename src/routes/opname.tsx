@@ -62,7 +62,9 @@ function Opname() {
     const t = setInterval(() => {
       try {
         const p = frame.current?.contentWindow?.location.pathname;
-        if (p) setHuidig(p.length > 1 ? p.replace(/\/$/, "") : p);
+        // Tijdens laden staat er even 'about:blank' in het kader; dat negeren.
+        if (p?.startsWith("/") && !p.startsWith("/opname"))
+          setHuidig(p.length > 1 ? p.replace(/\/$/, "") : p);
       } catch {
         /* kader nog aan het laden */
       }
@@ -102,7 +104,9 @@ function Opname() {
         <iframe
           ref={frame}
           key={`${pad}-${herstart}`}
-          src={pad}
+          // Met slash: de server stuurt '/pagina' anders via een http-redirect door,
+          // en die blokkeert de browser binnen een https-pagina (kader blijft leeg).
+          src={pad === "/" ? pad : `${pad}/`}
           title="DokterTijd in opnamekader"
           width={w}
           height={h}
