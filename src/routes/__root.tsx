@@ -112,6 +112,7 @@ const NAV = [
   { to: "/werkdag", label: "Mijn werkdag" },
   { to: "/simuleer", label: "Simuleer een dag" },
   { to: "/onder-water", label: "Onder water" },
+  { to: "/toekomst", label: "Toekomst" },
 ] as const;
 
 function RootComponent() {
