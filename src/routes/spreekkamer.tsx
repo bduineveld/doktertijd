@@ -37,7 +37,19 @@ const NACHTKAARTEN = [
 ];
 
 const DOKTERSTIJD_KINDS = ["fysiek", "video", "telefoon", "visite", "slechtnieuws"];
-const TIJDEN = ["08:00", "08:18", "09:15", "11:10", "13:05", "15:10", "16:00", "16:45", "17:00"];
+// Vaste tijd per afspraak. De praktijk werkt tot 17:00; de laatste afspraak begint uiterlijk 15:45.
+// De visite ligt aan het eind van de ochtend, voor de lunch.
+const TIJDEN: Record<string, string> = {
+  hassan: "08:00",
+  hendriks: "08:18",
+  devries: "09:15",
+  peters: "11:10",
+  vermeer: "11:30",
+  kuipers: "13:05",
+  mulder: "14:20",
+  meijer: "15:00",
+  elamrani: "15:40",
+};
 
 function Projectie() {
   const [maxDelegatie] = useMaxDelegatie();
@@ -69,7 +81,9 @@ function Projectie() {
 
   const afspraken = useMemo(() => {
     const verborgen = maxDelegatie ? (MAX_DELEGATIE_IDS as readonly string[]) : [];
-    return TASKS.filter((t) => DOKTERSTIJD_KINDS.includes(t.kind) && !verborgen.includes(t.id)).slice(0, 9);
+    return TASKS.filter((t) => DOKTERSTIJD_KINDS.includes(t.kind) && !verborgen.includes(t.id))
+      .slice(0, 9)
+      .sort((a, b) => (TIJDEN[a.id] ?? "99").localeCompare(TIJDEN[b.id] ?? "99"));
   }, [maxDelegatie]);
 
   useEffect(() => () => stopSpraak(), []);
@@ -335,7 +349,7 @@ function Projectie() {
 
               <h2 className="mt-10 text-[1.5rem]">Hier zie je de volgende afspraken.</h2>
               <ul className="mt-5 divide-y divide-border border-y border-border">
-                {afspraken.map((t, i) => (
+                {afspraken.map((t) => (
                   <li key={t.id}>
                     <button
                       type="button"
@@ -343,7 +357,7 @@ function Projectie() {
                       className="-mx-3 flex w-[calc(100%+1.5rem)] items-baseline gap-5 rounded-lg px-3 py-3.5 text-left transition-colors hover:bg-secondary/60"
                     >
                     <span className="w-16 shrink-0 font-serif text-[1.1rem] text-muted-foreground">
-                      {TIJDEN[i] ?? "—"}
+                      {TIJDEN[t.id] ?? "—"}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="font-serif text-[1.2rem]">{t.naam}</span>

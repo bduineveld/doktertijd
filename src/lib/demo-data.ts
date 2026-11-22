@@ -245,7 +245,7 @@ export const TASKS: Task[] = [
     choices: [
       { label: "Prednison 5 dagen", gevolg: "Recept, instructie en controlebelafspraak dag 3 geregeld." },
       { label: "Onderhoud intensiveren", gevolg: "Doseerschema aangepast, monitoring piekstroom geactiveerd." },
-      { label: "Vandaag telefonisch nabellen", gevolg: "Belafspraak 16:20 ingepland." },
+      { label: "Vandaag telefonisch nabellen", gevolg: "Belafspraak 15:30 ingepland." },
     ],
   },
   {
