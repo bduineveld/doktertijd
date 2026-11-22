@@ -108,12 +108,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 const HOOFD = { to: "/spreekkamer", label: "Spreekkamer" } as const;
 
+// Aanleiding en Toekomst zijn presentatieslides: bereikbaar via het adres of het opnamekader, niet via het menu.
 const NAV = [
-  { to: "/aanleiding", label: "Aanleiding" },
   { to: "/werkdag", label: "Mijn werkdag" },
   { to: "/simuleer", label: "Simuleer een dag" },
   { to: "/onder-water", label: "Onder water" },
-  { to: "/toekomst", label: "Toekomst" },
 ] as const;
 
 function RootComponent() {

@@ -19,8 +19,9 @@ export default defineConfig({
     server: { entry: "server" },
     ...(staticBuild && {
       prerender: { enabled: true, crawlLinks: true, autoSubfolderIndex: true },
-      // /opname (opnamekader voor de demovideo) staat in geen enkel menu, dus expliciet meenemen.
-      pages: [{ path: "/opname" }],
+      // Deze pagina's staan in geen enkel menu, dus expliciet meenemen:
+      // het opnamekader en de presentatieslides.
+      pages: [{ path: "/opname" }, { path: "/aanleiding" }, { path: "/toekomst" }],
     }),
   },
 });
