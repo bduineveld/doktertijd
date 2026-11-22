@@ -109,6 +109,7 @@ function RootShell({ children }: { children: ReactNode }) {
 const HOOFD = { to: "/spreekkamer", label: "Spreekkamer" } as const;
 
 const NAV = [
+  { to: "/aanleiding", label: "Aanleiding" },
   { to: "/werkdag", label: "Mijn werkdag" },
   { to: "/simuleer", label: "Simuleer een dag" },
   { to: "/onder-water", label: "Onder water" },
@@ -119,8 +120,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [maxDelegatie, zet] = useMaxDelegatie();
   const [toast, setToast] = useState<string | null>(null);
-  // De openingspagina staat op zichzelf: geen menu en geen footer.
-  const opening = useRouterState({ select: (s) => s.location.pathname === "/" });
+  // De openingspagina en het opnamekader staan op zichzelf: geen menu en geen footer.
+  const opening = useRouterState({
+    select: (s) => s.location.pathname === "/" || s.location.pathname.startsWith("/opname"),
+  });
 
   useEffect(() => {
     if (!toast) return;
