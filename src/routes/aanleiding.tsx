@@ -4,13 +4,13 @@ import { SLIDE_W, Slide, SlideKop } from "@/components/slide";
 export const Route = createFileRoute("/aanleiding")({
   head: () => ({
     meta: [
-      { title: "Aanleiding — DokterTijd" },
+      { title: "Aanleiding" },
       {
         name: "description",
         content:
           "Aanleiding en ambitie: twee keer zoveel patiënten, en tijd voor de zorg die ertoe doet.",
       },
-      { property: "og:title", content: "Aanleiding — DokterTijd" },
+      { property: "og:title", content: "Aanleiding" },
     ],
   }),
   component: Aanleiding,
@@ -205,7 +205,7 @@ function Aanleiding() {
         zelf tastbaar gemaakt — zonder programmeerkennis
       </text>
 
-      <SlideKop>DOKTERTIJD · AANLEIDING</SlideKop>
+      <SlideKop>AANLEIDING</SlideKop>
     </Slide>
   );
 }

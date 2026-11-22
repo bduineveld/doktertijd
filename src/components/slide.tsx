@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 /** Vaste tekenmaat van elke slide (16:9). */
 export const SLIDE_W = 1600;
@@ -19,44 +19,45 @@ const SLIDE_CSS = `
   .sl-adem { transform-box: fill-box; transform-origin: center; animation: sl-adem 5s ease-in-out infinite; }
 `;
 
-/** Eén presentatieslide: 16:9-kaart op een donkere achtergrond, met knop voor volledig scherm. */
-export function Slide({ label, children }: { label: string; children: ReactNode }) {
-  const kaart = useRef<HTMLDivElement>(null);
+/**
+ * Eén presentatieslide, schermvullend zoals de openingspagina: geen menu, geen kader.
+ * De tekening blijft 16:9 en schaalt mee; bij een andere verhouding vult papier de rest.
+ * Toets F zet volledig scherm aan of uit. Met onderaan={true} staat de tekening op de
+ * onderrand (voor een horizon), anders in het midden.
+ */
+export function Slide({
+  label,
+  onderaan = false,
+  children,
+}: {
+  label: string;
+  onderaan?: boolean;
+  children: ReactNode;
+}) {
+  const scherm = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const opToets = (e: KeyboardEvent) => {
+      if (e.key !== "f" && e.key !== "F") return;
+      if (document.fullscreenElement) void document.exitFullscreen?.();
+      else void scherm.current?.requestFullscreen?.();
+    };
+    window.addEventListener("keydown", opToets);
+    return () => window.removeEventListener("keydown", opToets);
+  }, []);
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] bg-ink px-6 py-6">
-      {/* Breedte volgt ook de schermhoogte, zodat de hele slide onder het menu past (ook in 1280×720). */}
-      <div
-        className="mx-auto"
-        style={{ width: "min(100%, 72rem, calc((100vh - 13rem) * 16 / 9))" }}
+    <div ref={scherm} className="h-screen w-full overflow-hidden bg-paper">
+      <svg
+        viewBox={`0 0 ${SLIDE_W} ${SLIDE_H}`}
+        preserveAspectRatio={onderaan ? "xMidYMax meet" : "xMidYMid meet"}
+        className="block h-full w-full"
+        role="img"
+        aria-label={label}
       >
-        <div
-          ref={kaart}
-          className="relative aspect-video w-full overflow-hidden rounded-2xl bg-paper"
-          style={{
-            boxShadow: "0 0 120px -30px oklch(0.42 0.045 165 / 55%), 0 0 0 1px oklch(1 0 0 / 6%)",
-          }}
-        >
-          <svg
-            viewBox={`0 0 ${SLIDE_W} ${SLIDE_H}`}
-            className="absolute inset-0 h-full w-full"
-            role="img"
-            aria-label={label}
-          >
-            <style>{SLIDE_CSS}</style>
-            {children}
-          </svg>
-        </div>
-
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={() => kaart.current?.requestFullscreen?.()}
-            className="rounded-full border border-paper/20 px-4 py-1.5 text-[0.82rem] text-paper/60 hover:border-paper/50 hover:text-paper"
-          >
-            Volledig scherm
-          </button>
-        </div>
-      </div>
+        <style>{SLIDE_CSS}</style>
+        {children}
+      </svg>
     </div>
   );
 }

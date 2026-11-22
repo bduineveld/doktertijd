@@ -119,9 +119,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [maxDelegatie, zet] = useMaxDelegatie();
   const [toast, setToast] = useState<string | null>(null);
-  // De openingspagina en het opnamekader staan op zichzelf: geen menu en geen footer.
+  // Openingspagina, opnamekader en de presentatieslides staan op zichzelf: geen menu en geen footer.
   const opening = useRouterState({
-    select: (s) => s.location.pathname === "/" || s.location.pathname.startsWith("/opname"),
+    select: (s) => /^\/(opname|aanleiding|toekomst)?\/?$/.test(s.location.pathname),
   });
 
   // ?opname achter elke pagina opent die pagina in het opnamekader (16:9) voor de demovideo.

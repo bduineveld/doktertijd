@@ -4,13 +4,13 @@ import { SLIDE_H, SLIDE_W, Slide, SlideKop } from "@/components/slide";
 export const Route = createFileRoute("/toekomst")({
   head: () => ({
     meta: [
-      { title: "Toekomst — DokterTijd" },
+      { title: "Toekomst" },
       {
         name: "description",
         content:
           "Vooruitblik: wat nu al kan, wat in 2030 past en wat daarna nog uitwerking vraagt.",
       },
-      { property: "og:title", content: "Toekomst — DokterTijd" },
+      { property: "og:title", content: "Toekomst" },
     ],
   }),
   component: Toekomst,
@@ -71,7 +71,10 @@ function boog(r: number) {
 
 function Toekomst() {
   return (
-    <Slide label="Vooruitblik als horizon. Nu: plezier in het bouwen, zelf praktijktools bouwen. 2030: dossier samenvatten, bewezen veilige keuzes. Later: complexe zorg, eigen taal, kwetsbare ouderen, minder digitaal vaardigen. Rechtsboven: samen delen in het CMIO-netwerk.">
+    <Slide
+      onderaan
+      label="Vooruitblik als horizon. Nu: plezier in het bouwen, zelf praktijktools bouwen. 2030: dossier samenvatten, bewezen veilige keuzes. Later: complexe zorg, eigen taal, kwetsbare ouderen, minder digitaal vaardigen. Rechtsboven: samen delen in het CMIO-netwerk."
+    >
       <defs>
         <radialGradient id="tk-gloed" cx="50%" cy="100%" r="75%">
           <stop offset="0%" stopColor="var(--sage-soft)" stopOpacity="0.9" />
@@ -214,7 +217,7 @@ function Toekomst() {
       </g>
 
       {/* Kop */}
-      <SlideKop>DOKTERTIJD · VOORUITBLIK</SlideKop>
+      <SlideKop>VOORUITBLIK</SlideKop>
     </Slide>
   );
 }
